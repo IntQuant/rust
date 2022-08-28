@@ -23,8 +23,6 @@
 #![feature(never_type)]
 #![feature(try_blocks)]
 #![recursion_limit = "512"] // For rustdoc
-// #![deny(rustc::untranslatable_diagnostic)]
-// #![deny(rustc::diagnostic_outside_of_impl)]
 
 #[macro_use]
 extern crate rustc_macros;
@@ -37,5 +35,9 @@ extern crate tracing;
 extern crate rustc_middle;
 
 mod errors;
+pub mod public_errors {
+    // Probably would be useful in rustc_borrowck
+    pub use super::errors::AddLifetimeParamsSuggestion;
+}
 pub mod infer;
 pub mod traits;
