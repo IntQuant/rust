@@ -121,9 +121,12 @@ impl<'a> DescriptionCtx<'a> {
 
 pub enum PrefixKind {
     Empty,
+    RefValidFor,
+    ContentValidFor,
 }
 
 pub enum SuffixKind {
+    Empty,
     Continues,
 }
 
@@ -131,6 +134,8 @@ impl IntoDiagnosticArg for PrefixKind {
     fn into_diagnostic_arg(self) -> rustc_errors::DiagnosticArgValue<'static> {
         let kind = match self {
             Self::Empty => "empty",
+            Self::RefValidFor => "ref_valid_for",
+            Self::ContentValidFor => "content_valid_for",
         }
         .into();
         rustc_errors::DiagnosticArgValue::Str(kind)
@@ -140,6 +145,7 @@ impl IntoDiagnosticArg for PrefixKind {
 impl IntoDiagnosticArg for SuffixKind {
     fn into_diagnostic_arg(self) -> rustc_errors::DiagnosticArgValue<'static> {
         let kind = match self {
+            Self::Empty => "empty",
             Self::Continues => "continues",
         }
         .into();

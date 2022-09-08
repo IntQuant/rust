@@ -140,6 +140,8 @@ infer_lifetime_param_suggestion_elided = each elided lifetime in input position 
 
 infer_region_explanation = {$pref_kind ->
     *[should_not_happen] [{$pref_kind}]
+    [ref_valid_for] ...the reference is valid for
+    [content_valid_for] ...but the borrowed content is only valid for
     [empty] {""}
 }{$pref_kind ->
     [empty] {""}
@@ -168,3 +170,6 @@ infer_msl_introduces_static = introduces a `'static` lifetime requirement
 infer_msl_unmet_req = because this has an unmet lifetime requirement
 infer_msl_trait_note = this has an implicit `'static` lifetime requirement
 infer_msl_trait_sugg = consider relaxing the implicit `'static` requirement
+
+infer_outlives_content = lifetime of reference outlives lifetime of borrowed content...
+infer_outlives_captured = lifetime of borrowed pointer outlives lifetime of captured variable `{$var_name}`...

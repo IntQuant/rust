@@ -476,3 +476,14 @@ pub struct MismatchedStaticLifetime<'a> {
     #[subdiagnostic]
     pub trait_subdiags: Vec<TraitSubdiag>,
 }
+
+#[derive(SessionDiagnostic)]
+#[diag(infer::outlives_content, code = "E0312")]
+pub struct OutlivesContent<'a> {
+    #[primary_span]
+    pub span: Span,
+    #[subdiagnostic]
+    pub reference_valid: Option<note_and_explain::RegionExplanation<'a>>,
+    #[subdiagnostic]
+    pub content_valid: Option<note_and_explain::RegionExplanation<'a>>,
+}

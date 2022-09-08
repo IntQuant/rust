@@ -1,4 +1,4 @@
-use crate::errors::RegionOriginNote;
+use crate::errors::{note_and_explain, OutlivesContent, RegionOriginNote};
 use crate::infer::error_reporting::note_and_explain_region;
 use crate::infer::{self, InferCtxt, SubregionOrigin};
 use rustc_errors::{
@@ -7,6 +7,7 @@ use rustc_errors::{
 use rustc_middle::traits::ObligationCauseCode;
 use rustc_middle::ty::error::TypeError;
 use rustc_middle::ty::{self, Region};
+use rustc_session::SessionDiagnostic;
 
 use super::ObligationCauseAsDiagArg;
 
@@ -127,29 +128,22 @@ impl<'a, 'tcx> InferCtxt<'a, 'tcx> {
                 err
             }
             infer::Reborrow(span) => {
-                let mut err = struct_span_err!(
-                    self.tcx.sess,
-                    span,
-                    E0312,
-                    "lifetime of reference outlives lifetime of borrowed content..."
-                );
-                note_and_explain_region(
+                let reference_valid = note_and_explain::RegionExplanation::new(
                     self.tcx,
-                    &mut err,
-                    "...the reference is valid for ",
                     sub,
-                    "...",
                     None,
+                    note_and_explain::PrefixKind::RefValidFor,
+                    note_and_explain::SuffixKind::Continues,
                 );
-                note_and_explain_region(
+                let content_valid = note_and_explain::RegionExplanation::new(
                     self.tcx,
-                    &mut err,
-                    "...but the borrowed content is only valid for ",
                     sup,
-                    "",
                     None,
+                    note_and_explain::PrefixKind::ContentValidFor,
+                    note_and_explain::SuffixKind::Empty,
                 );
-                err
+                OutlivesContent { span, reference_valid, content_valid }
+                    .into_diagnostic(&self.tcx.sess.parse_sess)
             }
             infer::ReborrowUpvar(span, ref upvar_id) => {
                 let var_name = self.tcx.hir().name(upvar_id.var_path.hir_id);
